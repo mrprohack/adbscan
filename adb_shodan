@@ -6,7 +6,7 @@ else
   mkdir $1 && cd $1
   shodan search --fields ip_str,port Android Debug Bridge > $1_shdoan
   cat $1_shdoan| awk '{print $1 ":" $2}' > $1_ipsonly
-  cat $1_ipsonly | parallel -j $2 adb connect {}
+  cat $1_ipsonly | parallel -j $2 timeout 10 adb connect {}
   adb devices | grep device | grep -v devices > $1_working
   adb disconnect
 fi
