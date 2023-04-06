@@ -19,3 +19,18 @@ You can install these dependencies on Debian-based systems using the following c
 ```sh
 sudo apt-get install libpcap0.8 libpcap0.8-dev libpcap-dev parallel masscan nmap adb -y
 ```
+
+You also need to install the Python Shodan library:
+
+```sh
+pip install shodan
+```
+# Usage
+
+To use adbscan, simply run the `adbscan.sh` script with two arguments
+```sh
+./adbscan.sh <directory_name> <max_parallel_jobs>
+```
+`<directory_name>` is the name of the directory that will be created to store the results of the scan. `<max_parallel_jobs>` is the maximum number of parallel ADB connections that will be attempted at once.
+
+For example, to scan for Android devices on the network and create a directory named `scan_results` with a maximum of 10 parallel ADB connections, run:
