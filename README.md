@@ -1,4 +1,4 @@
-adbscan
+`adbscan`
 adbscan is a bash script that uses Shodan and ADB to scan for Android devices with ADB enabled on a network.
 
 Requirements
@@ -8,14 +8,13 @@ libpcap and libpcap development libraries
 masscan
 nmap
 parallel
-nload
 In addition, you need to have ADB installed and configured on your system.
 
 You can install these dependencies on Ubuntu/Debian using the following command:
 
 arduino
 Copy code
-sudo apt-get install libpcap0.8 libpcap0.8-dev libpcap-dev parallel masscan nmap nload adb -y
+sudo apt-get install libpcap0.8 libpcap0.8-dev libpcap-dev parallel masscan nmap adb -y
 You also need to install the Python Shodan library:
 
 Copy code
