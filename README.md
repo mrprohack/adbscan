@@ -1,4 +1,4 @@
-`#adbscan`
+`## adbscan`
 adbscan is a bash script that uses Shodan and ADB to scan for Android devices with ADB enabled on a network.
 
 Requirements
