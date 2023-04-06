@@ -1,12 +1,25 @@
 #!/bin/bash
 
-if [ -d "$1" ]; then
-  echo "$1 exists."
-else
-  mkdir $1 && cd $1
-  shodan search --fields ip_str,port Android Debug Bridge > $1_shdoan
-  cat $1_shdoan| awk '{print $1 ":" $2}' > $1_ipsonly
-  cat $1_ipsonly | parallel -j $2 timeout 10 adb connect {}
-  adb devices | grep device | grep -v devices > $1_working
-  adb disconnect
+if [ -z "$1" ] || [ -z "$2" ]; then
+    echo "Usage: $0 directory_name max_parallel_jobs"
+    exit 1
 fi
+
+if [ -d "$1" ]; then
+    echo "$1 already exists. Please choose a different directory name."
+    exit 1
+fi
+
+mkdir "$1" && cd "$1" || { echo "Failed to create directory $1"; exit 1; }
+
+shodan search --fields ip_str,port "Android Debug Bridge" > "$1_shodan.txt" || { echo "Failed to run Shodan search"; exit 1; }
+
+awk '{print $1 ":" $2}' "$1_shodan.txt" > "$1_ips_only.txt" || { echo "Failed to process Shodan results"; exit 1; }
+
+cat "$1_ips_only.txt" | parallel -j "$2" timeout 10 adb connect {} || { echo "Failed to connect to devices"; exit 1; }
+
+adb devices | grep device | grep -v devices > "$1_working.txt" || { echo "Failed to get list of connected devices"; }
+
+adb disconnect
+
+echo "Done."
