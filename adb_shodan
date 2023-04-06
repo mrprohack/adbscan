@@ -1,25 +1,39 @@
 #!/bin/bash
 
-if [ -z "$1" ] || [ -z "$2" ]; then
-    echo "Usage: $0 directory_name max_parallel_jobs"
+# Check that the required arguments are provided
+if [ $# -lt 2 ]; then
+    echo "Usage: $0 <directory_name> <max_parallel_jobs>"
     exit 1
 fi
 
+# Check if the specified directory already exists
 if [ -d "$1" ]; then
-    echo "$1 already exists. Please choose a different directory name."
+    echo "Error: Directory $1 already exists. Please choose a different directory name."
     exit 1
 fi
 
-mkdir "$1" && cd "$1" || { echo "Failed to create directory $1"; exit 1; }
+# Create the directory and move into it
+mkdir -p "$1" && cd "$1" || { echo "Error: Failed to create directory $1"; exit 1; }
 
-shodan search --fields ip_str,port "Android Debug Bridge" > "$1_shodan.txt" || { echo "Failed to run Shodan search"; exit 1; }
+# Check if Shodan is installed
+if ! command -v shodan &> /dev/null; then
+    echo "Error: Shodan is not installed. Please install it and try again."
+    exit 1
+fi
 
-awk '{print $1 ":" $2}' "$1_shodan.txt" > "$1_ips_only.txt" || { echo "Failed to process Shodan results"; exit 1; }
+# Run the Shodan search and store the results in a file
+shodan search --fields ip_str,port "Android Debug Bridge" > "$1_shodan.txt" || { echo "Error: Failed to run Shodan search"; exit 1; }
 
-cat "$1_ips_only.txt" | parallel -j "$2" timeout 10 adb connect {} || { echo "Failed to connect to devices"; exit 1; }
+# Process the Shodan results and extract the IP addresses
+awk '{print $1 ":" $2}' "$1_shodan.txt" | head -n 100 > "$1_ips_only.txt" || { echo "Error: Failed to process Shodan results"; exit 1; }
 
-adb devices | grep device | grep -v devices > "$1_working.txt" || { echo "Failed to get list of connected devices"; }
+# Connect to the devices in parallel using adb
+cat "$1_ips_only.txt" | parallel -j "$2" timeout 10 adb connect {} || { echo "Error: Failed to connect to devices"; }
 
+# Get the list of connected devices and store it in a file
+adb devices | awk '/device$/ {print $1}' > "$1_working.txt" || { echo "Error: Failed to get list of connected devices"; }
+
+# Disconnect from the devices
 adb disconnect
 
 echo "Done."
