@@ -17,5 +17,5 @@ Before running the script, make sure the following tools are installed:
 You can install these dependencies on Debian-based systems using the following command:
 
 ```sh
-sudo apt-get install libpcap0.8 libpcap0.8-dev libpcap-dev parallel masscan nmap nload adb -y
+sudo apt-get install libpcap0.8 libpcap0.8-dev libpcap-dev parallel masscan nmap adb -y
 ```
