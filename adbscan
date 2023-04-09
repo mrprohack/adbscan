@@ -1,12 +1,15 @@
 #!/bin/bash
 
-if [ $# -lt 2 ]; then
+if [ $# -lt 1 ]; then
     echo "Usage: $0 --install"
     echo "Usage: $0 --shodan <directory_name> <max_parallel_jobs>"
     echo "Usage: $0 --masscan <directory_name> <max_parallel_jobs>"
-    echo "Usage: cat device | $0 --pipe shell id"
+    echo "Usage: $0 --pipe shell id"
+    echo "Usage: cat file | $0 --connect <max_parallel_jobs>"
+    echo "using: $0 --test id "
     exit 1
 fi
+
 
 if [ "$1" == "--install" ]; then
   # Install necessary packages
@@ -83,7 +86,7 @@ elif [ "$1" == "--masscan" ]; then
   cut -d '"' -f 4 "$2_masscan.xml" | grep -Eo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | awk '{print $1 ":5555"}' > "$2_ips_only.txt" || { echo "Failed to  extract IP addresses"; exit 1; }
 
   # Connect to devices in parallel
-  cat "$2_ips_only.txt" | parallel -j $3 adb connect {} | tee "$2_connect_output.txt" || { echo "Failed to connect to devices"; exit 1; }
+  cat "$2_ips_only.txt" | parallel -j $3 timeout 10 adb connect {} | tee "$2_connect_output.txt" || { echo "Failed to connect to devices"; exit 1; }
 
   # Get list of connected devices
   adb devices | grep device | grep -v devices | awk '{print $1}' > "$2_working.txt" || { echo "Failed to get list of connected devices"; exit 1; }
@@ -96,10 +99,49 @@ elif [ "$1" == "--masscan" ]; then
   echo "Done."
 
 elif [ "$1" == "--pipe" ]; then
-    if [ $# -lt 3 ]; then
-      echo "Usage: cat device | $0 --pipe shell id>"
-      exit 1
+  if [ $# -lt 3 ]; then
+    echo "Usage: $0 --pipe shell id>"
+    exit 1
   fi
   adb devices | grep device | grep -v devices |cut -f 1| parallel -j 2 adb -s {} $2 $3
 
+elif [ "$1" == "--connect" ]; then
+  if [ $# -lt 2 ]; then
+    echo "Usage: cat file | $0 --connect <max_parallel_jobs>"
+    exit 1
+  fi
+  parallel -j $2 timeout 10 adb connect {}
+
+elif [ "$1" == "--test" ]; then
+
+  if [ -z "$2" ]; then
+      echo "Usage: $0 --test file"
+      exit 1
+  fi
+
+  devices=$(adb devices | grep device | grep -v devices | cut -f 1)
+
+  if [ -z "$devices" ]; then
+      echo "No device is connected. Please connect a device first."
+      exit 1
+  fi
+
+  for device in $devices; do
+      if timeout 5 adb -s $device shell id > /dev/null 2>&1; then
+          echo "Command executed successfully on device $device."
+          echo $device >> $2
+      else
+          echo "Failed to execute command on device $device."
+      fi
+  done
+
+else
+  echo "Invalid Input : $1"
+  echo "Usage: $0 --install"
+  echo "Usage: $0 --shodan <directory_name> <max_parallel_jobs>"
+  echo "Usage: $0 --masscan <directory_name> <max_parallel_jobs>"
+  echo "Usage: $0 --pipe shell id"
+  echo "Usage: cat file | $0 --connect <max_parallel_jobs>"
+  echo "using: $0 --test id "
+  exit 1
 fi
