@@ -33,7 +33,12 @@ pip install shodan
 
 To use adbscan, simply run the `adbscan.sh` script with two arguments
 ```sh
-./adbscan.sh <directory_name> <max_parallel_jobs>
+adbscan --install
+adbscan --shodan <directory_name> <max_parallel_jobs>
+adbscan --masscan <directory_name> <max_parallel_jobs>
+adbscan --pipe shell id
+cat file | adbscan --connect <max_parallel_jobs>
+adbscan --test id
 ```
 `<directory_name>` is the name of the directory that will be created to store the results of the scan. `<max_parallel_jobs>` is the maximum number of parallel ADB connections that will be attempted at once.
 
