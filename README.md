@@ -7,7 +7,6 @@ adbscan is a Bash script that scans for Android Debug Bridge (ADB) devices using
 Before running the script, make sure the following tools are installed:
 
 - [adb](https://developer.android.com/studio/command-line/adb.html)
-- [nmap](https://nmap.org/)
 - [masscan](https://github.com/robertdavidgraham/masscan)
 - [parallel](https://www.gnu.org/software/parallel/)
 - [libpcap0.8](https://packages.debian.org/stretch/libpcap0.8)
@@ -21,7 +20,7 @@ Before running the script, make sure the following tools are installed:
 You can install these dependencies on Debian-based systems using the following command:
 
 ```sh
-sudo apt-get install libpcap0.8 libpcap0.8-dev libpcap-dev parallel masscan nmap adb -y
+sudo apt-get install libpcap0.8 libpcap0.8-dev libpcap-dev parallel masscan adb -y
 ```
 
 You also need to install the Python Shodan library:
@@ -45,7 +44,7 @@ adbscan --test id
 For example, to scan for Android devices on the network and create a directory named `scan_results` with a maximum of 10 parallel ADB connections, run:
 
 ```sh
-./adbscan.sh scan_results 10
+./adbscan.sh shodan tmpname 10
 ```
 
 # Disclaimer
