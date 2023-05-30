@@ -80,7 +80,7 @@ elif [ "$1" == "--masscan" ]; then
   fi
 
   # Run masscan
-  sudo masscan -p 5555 0.0.0.0/0 --exclude 255.255.255.255 --rate=10000 -oX "$2_masscan.xml " || { echo "Failed to run masscan"; exit 1; }
+  sudo masscan -p 5555 0.0.0.0/0 --exclude 255.255.255.255 --rate=10000 -oX "$2_masscan.xml" || { echo "Failed to run masscan"; exit 1; }
 
   # Extract IP addresses from masscan output
   cut -d '"' -f 4 "$2_masscan.xml" | grep -Eo '[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}' | awk '{print $1 ":5555"}' > "$2_ips_only.txt" || { echo "Failed to  extract IP addresses"; exit 1; }
