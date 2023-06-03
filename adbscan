@@ -7,6 +7,7 @@ if [ $# -lt 1 ]; then
     echo "Usage: $0 --pipe shell id"
     echo "Usage: cat file | $0 --connect <max_parallel_jobs>"
     echo "using: $0 --test id "
+    echo "using: $0 --screnshort"
     exit 1
 fi
 
@@ -134,6 +135,8 @@ elif [ "$1" == "--test" ]; then
           echo "Failed to execute command on device $device."
       fi
   done
+elif [ "$1" == "--screnshort" ]; then
+	adb devices | grep device | grep -v devices |cut -f 1| parallel -j 5 adb -s {} exec-out screencap -p > scran/screen{}.png
 
 else
   echo "Invalid Input : $1"
