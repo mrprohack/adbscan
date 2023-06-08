@@ -45,7 +45,7 @@ adbscan --screenshot
 For example, to scan for Android devices on the network and create a directory named `scan_results` with a maximum of 10 parallel ADB connections, run:
 
 ```sh
-./adbscan.sh shodan tmpname 10
+./adbscan.sh shodan tmpfilename 10
 ```
 
 # Disclaimer
