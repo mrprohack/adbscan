@@ -2,7 +2,7 @@
 
 # Install necessary packages
 sudo apt-get update
-sudo apt-get install -y libpcap0.8 libpcap0.8-dev libpcap-dev parallel masscan nmap nload adb
+sudo apt-get install -y libpcap0.8 libpcap0.8-dev libpcap-dev parallel masscan nmap nload adb python3-pip
 
 # Install Python package
 pip install shodan
