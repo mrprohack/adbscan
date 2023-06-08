@@ -17,6 +17,9 @@ if [ "$1" == "--install" ]; then
   sudo apt-get install -y libpcap0.8 libpcap0.8-dev libpcap-dev parallel masscan nmap nload adb
 
   # Install Python package
+  if ! command -v pip &> /dev/null ; then
+    echo "pip is not installd Please Check a tool"
+  fi
   pip install shodan
 
 elif [ "$1" == "--shodan" ]; then
